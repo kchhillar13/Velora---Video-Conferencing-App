@@ -228,7 +228,7 @@ Demonstrates the WebRTC signaling flow and client-server interactions.
 
 ### 4. Class Diagram
 Outlines the design patterns and SOLID principles applied in the backend (e.g. Singleton, Observer, Factory).
-![Class Diagram](Diagrams/classDiagram.jpeg)
+![Class Diagram](Diagrams/class_diagram.png)
 
 ---
 
