@@ -109,23 +109,34 @@ const Home = () => {
     setIsJoining(false);
   };
 
+  const greeting = (() => {
+    const hour = now.getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  })();
+
   return (
     <section className="flex size-full flex-col gap-10 text-white">
       {/* Hero Banner */}
-      <div className="relative h-[303px] w-full rounded-3xl bg-hero bg-cover overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-2/80 via-dark-2/40 to-transparent" />
+      <div className="relative h-[303px] w-full rounded-3xl overflow-hidden hero-gradient">
+        {/* Decorative orbs */}
+        <div className="absolute top-10 right-20 w-32 h-32 bg-blue-1/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-10 left-20 w-40 h-40 bg-purple-1/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+
         <div className="relative flex h-full flex-col justify-between p-8 lg:p-11">
           <div>
-            <span className="inline-block py-2 px-4 bg-white/10 backdrop-blur-sm rounded-full text-sky-1 text-sm font-medium">
-              {date.includes('Upcoming') ? '🔴 Upcoming Meeting at' : '✨'} Welcome to Velora
+            <span className="inline-flex items-center gap-2 py-2 px-4 bg-white/5 backdrop-blur-sm rounded-full text-sky-1 text-sm font-medium border border-white/5">
+              <span className="w-2 h-2 rounded-full bg-green-1 animate-pulse" />
+              {greeting}, {user?.firstName || 'there'}
             </span>
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-extrabold lg:text-7xl bg-gradient-to-r from-white to-sky-1 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold lg:text-7xl bg-gradient-to-r from-white via-white to-sky-1 bg-clip-text text-transparent drop-shadow-lg">
               {time}
             </h1>
-            <p className="text-lg font-medium text-sky-1/80 lg:text-2xl">
+            <p className="text-lg font-medium text-sky-1/70 lg:text-2xl">
               {date}
             </p>
           </div>

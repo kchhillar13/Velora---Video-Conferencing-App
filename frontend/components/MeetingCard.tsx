@@ -1,10 +1,12 @@
 'use client';
 
-import { type MeetingResponse } from '@/lib/api';
-import { Calendar, Clock, Users, Copy, Check } from 'lucide-react';
+import { type MeetingResponse, updateMeetingStatus } from '@/lib/api';
+import { Calendar, Clock, Users, Copy, Check, Square, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@clerk/nextjs';
+import { useMeetingStore } from '@/store/meeting.store';
 
 interface MeetingCardProps {
   meeting: MeetingResponse;
@@ -13,12 +15,39 @@ interface MeetingCardProps {
 
 const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
   const [copied, setCopied] = useState(false);
+  const [endingStatus, setEndingStatus] = useState<string | null>(null);
+  const { getToken } = useAuth();
+  const { updateMeetingInList } = useMeetingStore();
 
   const handleCopy = async () => {
     const link = `${window.location.origin}/meeting/${meeting.meetingCode}`;
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleUpdateStatus = async (newStatus: 'ENDED' | 'ACTIVE') => {
+    setEndingStatus(newStatus);
+    try {
+      const token = await getToken();
+      if (!token) return;
+
+      // Optimistic UI update — update Zustand store immediately
+      updateMeetingInList(meeting.id, {
+        status: newStatus,
+        ...(newStatus === 'ENDED' ? { endedAt: new Date().toISOString() } : {}),
+        ...(newStatus === 'ACTIVE' ? { startedAt: new Date().toISOString() } : {}),
+      });
+
+      // Fire the API call
+      await updateMeetingStatus(token, meeting.id, newStatus);
+    } catch (error) {
+      console.error(`Failed to update meeting status to ${newStatus}:`, error);
+      // Revert optimistic update on failure
+      updateMeetingInList(meeting.id, { status: meeting.status });
+    } finally {
+      setEndingStatus(null);
+    }
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -89,13 +118,45 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
           </button>
 
+          {/* End Meeting button — show for upcoming/active meetings */}
           {type === 'upcoming' && meeting.status !== 'ENDED' && (
-            <Link
-              href={`/meeting/${meeting.meetingCode}`}
-              className="px-4 py-2 bg-blue-1 hover:bg-blue-1/90 text-white text-sm font-medium rounded-xl transition-all"
+            <>
+              <button
+                onClick={() => handleUpdateStatus('ENDED')}
+                disabled={endingStatus !== null}
+                className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all disabled:opacity-50"
+                title="End meeting"
+              >
+                {endingStatus === 'ENDED' ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Square className="size-4" />
+                )}
+              </button>
+
+              <Link
+                href={`/meeting/${meeting.meetingCode}`}
+                className="px-4 py-2 bg-blue-1 hover:bg-blue-1/90 text-white text-sm font-medium rounded-xl transition-all"
+              >
+                Start
+              </Link>
+            </>
+          )}
+
+          {/* Cancel button — only for PENDING meetings */}
+          {type === 'upcoming' && meeting.status === 'PENDING' && (
+            <button
+              onClick={() => handleUpdateStatus('ENDED')}
+              disabled={endingStatus !== null}
+              className="p-2 rounded-lg hover:bg-orange-1/20 text-gray-400 hover:text-orange-1 transition-all disabled:opacity-50"
+              title="Cancel meeting"
             >
-              Start
-            </Link>
+              {endingStatus ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <XCircle className="size-4" />
+              )}
+            </button>
           )}
         </div>
       </div>

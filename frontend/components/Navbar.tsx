@@ -9,11 +9,14 @@ const Navbar = () => {
   const { isSignedIn } = useAuth();
 
   return (
-    <nav className="flex-between fixed z-50 w-full bg-dark-1/90 backdrop-blur-lg px-6 py-4 lg:px-10 border-b border-white/5">
-      <Link href="/" className="flex items-center gap-2 group">
+    <nav
+      className="flex-between fixed z-50 w-full h-[72px] bg-dark-1/90 backdrop-blur-xl px-6 lg:px-10 border-b border-white/5"
+      id="velora-navbar"
+    >
+      <Link href="/" className="flex items-center gap-2.5 group">
         <div className="relative">
-          <div className="absolute inset-0 bg-blue-1/20 rounded-lg blur-md group-hover:bg-blue-1/30 transition-colors" />
-          <div className="relative bg-gradient-to-br from-blue-1 to-purple-1 p-2 rounded-lg">
+          <div className="absolute inset-0 bg-blue-1/20 rounded-lg blur-md group-hover:bg-blue-1/30 transition-colors duration-300" />
+          <div className="relative bg-gradient-to-br from-blue-1 to-purple-1 p-2 rounded-lg shadow-lg shadow-blue-1/20">
             <Video className="size-5 text-white" />
           </div>
         </div>
@@ -27,7 +30,7 @@ const Navbar = () => {
           <UserButton
             appearance={{
               elements: {
-                avatarBox: 'w-9 h-9',
+                avatarBox: 'w-9 h-9 ring-2 ring-white/10 ring-offset-2 ring-offset-dark-1',
               },
             }}
           />

@@ -1,12 +1,60 @@
 @import "tailwindcss";
+@source "../tailwind.config.ts";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ─── Color Tokens ──────────────────────────────────── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Dark mode surface colors */
+  --color-dark-1: #1C1F2E;
+  --color-dark-2: #161925;
+  --color-dark-3: #252A41;
+  --color-dark-4: #1E2757;
+
+  /* Brand colors */
+  --color-blue-1: #0E78F9;
+  --color-blue-2: #2C74B3;
+  --color-sky-1: #C9DDFF;
+  --color-sky-2: #ECF0FF;
+  --color-orange-1: #FF742E;
+  --color-purple-1: #830EF9;
+  --color-yellow-1: #F9A90E;
+  --color-green-1: #2ECC71;
+
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Animations */
+  --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-pulse-ring: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes slide-in {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes scale-in {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 }
 
 :root {
@@ -60,7 +108,7 @@ body {
   background: #3a3f5c;
 }
 
-/* ─── Glass Effect ───────────────────────────────────── */
+/* ─── Glass Effects ──────────────────────────────────── */
 
 .glassmorphism {
   background: rgba(255, 255, 255, 0.05);
@@ -74,6 +122,18 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glassmorphism-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* ─── Video Grid ─────────────────────────────────────── */
@@ -138,6 +198,36 @@ body {
   background: #ef4444;
 }
 
+/* ─── Premium Card Effects ───────────────────────────── */
+
+.card-glow {
+  position: relative;
+}
+
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 120, 249, 0.3),
+    transparent 50%,
+    rgba(131, 14, 249, 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card-glow:hover::before {
+  opacity: 1;
+}
+
 /* ─── Animations ─────────────────────────────────────── */
 
 @keyframes shimmer {
@@ -150,4 +240,14 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
+}
+
+/* ─── Hero Gradient Mesh ─────────────────────────────── */
+
+.hero-gradient {
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(14, 120, 249, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(131, 14, 249, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(255, 116, 46, 0.08) 0%, transparent 40%),
+    linear-gradient(135deg, #1C1F2E 0%, #161925 100%);
 }

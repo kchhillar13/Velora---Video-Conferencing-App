@@ -1,19 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { getUserMeetings, type MeetingResponse } from '@/lib/api';
+import { getUserMeetings } from '@/lib/api';
+import { useMeetingStore } from '@/store/meeting.store';
 import MeetingCard from '@/components/MeetingCard';
 import Loader from '@/components/Loader';
 import { Clock } from 'lucide-react';
 
 export default function PreviousPage() {
   const { getToken } = useAuth();
-  const [meetings, setMeetings] = useState<MeetingResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { meetings, meetingsLoading, setMeetings, setMeetingsLoading } = useMeetingStore();
 
   useEffect(() => {
     const fetchMeetings = async () => {
+      setMeetingsLoading(true);
       try {
         const token = await getToken();
         if (token) {
@@ -23,13 +24,13 @@ export default function PreviousPage() {
       } catch (error) {
         console.error('Failed to fetch meetings:', error);
       } finally {
-        setLoading(false);
+        setMeetingsLoading(false);
       }
     };
     fetchMeetings();
-  }, [getToken]);
+  }, [getToken, setMeetings, setMeetingsLoading]);
 
-  if (loading) return <Loader />;
+  if (meetingsLoading) return <Loader />;
 
   return (
     <section className="flex size-full flex-col gap-10 text-white">

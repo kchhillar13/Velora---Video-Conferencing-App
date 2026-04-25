@@ -32,9 +32,9 @@ const rtcConfig: RTCConfig = {
 /**
  * useWebRTC — Core hook that manages all WebRTC peer connections.
  *
- * Flow:
- * 1. On join → receive room-users → create offers to each existing peer
- * 2. On user-joined → wait for their offer
+ * Signaling Protocol (avoids glare / dual-offer):
+ * 1. New peer joins → receives `room-users` → creates offers to each existing peer
+ * 2. Existing peers receive `user-joined` → do NOT create offers (wait for new peer's offer)
  * 3. On offer → create answer
  * 4. On answer → set remote description
  * 5. On ice-candidate → add ICE candidate
@@ -44,6 +44,8 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
   const peerConnections = useRef<Map<string, RTCPeerConnection>>(new Map());
   const pendingCandidates = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
   const localStreamRef = useRef<MediaStream | null>(null);
+  // Track peer names for offer handling (socketId → userName)
+  const peerNamesRef = useRef<Map<string, string>>(new Map());
 
   const {
     addPeer,
@@ -63,6 +65,9 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
       if (existing) {
         existing.close();
       }
+
+      // Store the peer name for later use
+      peerNamesRef.current.set(remoteSocketId, remoteName);
 
       const pc = new RTCPeerConnection(rtcConfig);
       peerConnections.current.set(remoteSocketId, pc);
@@ -245,6 +250,7 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
     });
     peerConnections.current.clear();
     pendingCandidates.current.clear();
+    peerNamesRef.current.clear();
   }, [removePeer]);
 
   /**
@@ -259,17 +265,27 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
   useEffect(() => {
     if (!socket || !meetingCode) return;
 
-    // When receiving the list of existing room users, create offers to each
+    /**
+     * room-users: Received ONLY by the new joiner.
+     * Contains the list of existing peers in the room.
+     * The NEW peer creates offers to each existing peer.
+     */
     const onRoomUsers = (users: PeerInfo[]) => {
       users.forEach((user) => {
+        peerNamesRef.current.set(user.socketId, user.userName);
         createOffer(user.socketId, user.userName);
       });
     };
 
-    // When a new user joins, we wait for THEIR offer (they are the polite peer)
-    // Actually, following our protocol: existing users create offers to new users
+    /**
+     * user-joined: A new peer has joined the room.
+     * EXISTING peers do NOT create offers — they wait for the new peer's offer
+     * (sent via onRoomUsers). This avoids WebRTC glare (dual-offer deadlock).
+     */
     const onUserJoined = (peer: PeerInfo) => {
-      createOffer(peer.socketId, peer.userName);
+      // Just track the peer name — the offer will come from them
+      peerNamesRef.current.set(peer.socketId, peer.userName);
+      console.log(`[webrtc] Peer joined: ${peer.userName} (${peer.socketId}), waiting for their offer`);
     };
 
     // When a user leaves
@@ -280,13 +296,14 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
         peerConnections.current.delete(data.socketId);
       }
       pendingCandidates.current.delete(data.socketId);
+      peerNamesRef.current.delete(data.socketId);
       removePeer(data.socketId);
     };
 
-    // Forward SDP offer
+    // Forward SDP offer — use tracked peer name if available
     const onOffer = (data: { senderId: string; sdp: RTCSessionDescriptionInit }) => {
-      // Find sender name from store or use a fallback
-      handleOffer(data.senderId, data.sdp, 'Peer');
+      const senderName = peerNamesRef.current.get(data.senderId) || 'Peer';
+      handleOffer(data.senderId, data.sdp, senderName);
     };
 
     // Forward SDP answer
@@ -299,9 +316,8 @@ export function useWebRTC(socket: Socket | null, meetingCode: string | null) {
       handleIceCandidate(data.senderId, data.candidate);
     };
 
-    // Media state events
+    // Media state events — find the correct socketId by userId
     const onPeerAudioToggled = (data: { userId: string; enabled: boolean }) => {
-      // Find socketId by userId — we search through peers
       peerConnections.current.forEach((_pc, socketId) => {
         const peerState = useMeetingStore.getState().peers.get(socketId);
         if (peerState) {

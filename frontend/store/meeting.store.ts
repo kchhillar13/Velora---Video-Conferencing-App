@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { type MeetingResponse } from '@/lib/api';
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -29,6 +30,10 @@ interface MeetingState {
   isParticipantListOpen: boolean;
   isChatOpen: boolean;
 
+  // Dashboard meetings list
+  meetings: MeetingResponse[];
+  meetingsLoading: boolean;
+
   // Actions — Local Media
   setLocalStream: (stream: MediaStream | null) => void;
   setAudioEnabled: (enabled: boolean) => void;
@@ -47,6 +52,12 @@ interface MeetingState {
   updatePeerVideo: (socketId: string, enabled: boolean) => void;
   updatePeerScreenShare: (socketId: string, isSharing: boolean) => void;
   updatePeerStream: (socketId: string, stream: MediaStream) => void;
+
+  // Actions — Dashboard Meetings
+  setMeetings: (meetings: MeetingResponse[]) => void;
+  setMeetingsLoading: (loading: boolean) => void;
+  updateMeetingInList: (meetingId: string, updates: Partial<MeetingResponse>) => void;
+  removeMeetingFromList: (meetingId: string) => void;
 
   // Actions — UI
   toggleParticipantList: () => void;
@@ -70,6 +81,8 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
   peers: new Map(),
   isParticipantListOpen: false,
   isChatOpen: false,
+  meetings: [],
+  meetingsLoading: false,
 
   // Local media actions
   setLocalStream: (stream) => set({ localStream: stream }),
@@ -171,6 +184,24 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
       }
       return { peers: newPeers };
     });
+  },
+
+  // Dashboard meetings actions
+  setMeetings: (meetings) => set({ meetings }),
+  setMeetingsLoading: (loading) => set({ meetingsLoading: loading }),
+
+  updateMeetingInList: (meetingId, updates) => {
+    set((state) => ({
+      meetings: state.meetings.map((m) =>
+        m.id === meetingId ? { ...m, ...updates } : m
+      ),
+    }));
+  },
+
+  removeMeetingFromList: (meetingId) => {
+    set((state) => ({
+      meetings: state.meetings.filter((m) => m.id !== meetingId),
+    }));
   },
 
   // UI actions

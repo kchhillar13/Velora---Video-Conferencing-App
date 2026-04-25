@@ -65,7 +65,16 @@ export class RoomManager {
   }
 
   /**
+   * Checks if a socket is already in a room.
+   */
+  public isInRoom(meetingCode: string, socketId: string): boolean {
+    const room = this.rooms.get(meetingCode);
+    return room?.participants.has(socketId) ?? false;
+  }
+
+  /**
    * Adds a participant to a room.
+   * Returns the full list of participants AFTER joining.
    */
   public joinRoom(meetingCode: string, peer: PeerInfo): PeerInfo[] {
     const room = this.getOrCreateRoom(meetingCode);
@@ -79,6 +88,7 @@ export class RoomManager {
 
   /**
    * Removes a participant from a room by socket ID.
+   * Fires observer notification so the SocketRoomObserver broadcasts user-left.
    * Returns the removed peer info, or null if not found.
    */
   public leaveRoom(meetingCode: string, socketId: string): PeerInfo | null {
@@ -103,12 +113,38 @@ export class RoomManager {
   }
 
   /**
+   * Removes a participant without firing observer notifications.
+   * Used internally when the caller handles broadcasts directly.
+   */
+  public leaveRoomSilent(meetingCode: string, socketId: string): PeerInfo | null {
+    const room = this.rooms.get(meetingCode);
+    if (!room) return null;
+
+    const peer = room.participants.get(socketId);
+    if (!peer) return null;
+
+    room.participants.delete(socketId);
+    logger.info(`User ${peer.userName} (${socketId}) silently removed from room ${meetingCode}`);
+
+    // Clean up empty rooms
+    if (room.participants.size === 0) {
+      this.rooms.delete(meetingCode);
+      logger.info(`Room ${meetingCode} closed (empty)`);
+    }
+
+    return peer;
+  }
+
+  /**
    * Removes a socket from all rooms (used on disconnect).
+   * Uses the normal leaveRoom with observer notification so the
+   * SocketRoomObserver handles broadcasting user-left.
    */
   public removeFromAllRooms(socketId: string): { meetingCode: string; peer: PeerInfo } | null {
     for (const [meetingCode, room] of this.rooms) {
       const peer = room.participants.get(socketId);
       if (peer) {
+        // Use the notifying version — the Observer will broadcast user-left
         this.leaveRoom(meetingCode, socketId);
         return { meetingCode, peer };
       }

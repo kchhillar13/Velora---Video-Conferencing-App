@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { useMeetingStore } from '@/store/meeting.store';
@@ -21,6 +21,7 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
   const { user } = useUser();
   const { connect, disconnect, socketRef } = useSocket();
   const { getScreenShare } = useMediaStream();
+  const joinedRef = useRef(false);
 
   const {
     localStream,
@@ -29,7 +30,6 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
     isScreenSharing,
     peers,
     isParticipantListOpen,
-    isInMeeting,
     setAudioEnabled,
     setVideoEnabled,
     setScreenSharing,
@@ -46,32 +46,37 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
   // ─── Join the meeting room ─────────────────────────
 
   const joinMeeting = useCallback(() => {
-    if (!user || !localStream) return;
+    if (!user || !localStream || joinedRef.current) return;
+    joinedRef.current = true;
 
-    const socket = connect();
     setLocalStream(localStream);
+    const socket = connect();
 
-    socket.on('connect', () => {
+    const emitJoin = () => {
       socket.emit('join-room', {
         meetingCode,
         userId: user.id,
         userName: user.fullName || user.firstName || 'Anonymous',
       });
       setIsInMeeting(true);
-    });
+    };
 
     if (socket.connected) {
-      socket.emit('join-room', {
-        meetingCode,
-        userId: user.id,
-        userName: user.fullName || user.firstName || 'Anonymous',
-      });
-      setIsInMeeting(true);
+      // Socket is already connected — emit immediately
+      emitJoin();
+    } else {
+      // Wait for connection — use .once() to prevent duplicate handlers
+      socket.once('connect', emitJoin);
     }
   }, [user, localStream, meetingCode, connect, setLocalStream, setIsInMeeting]);
 
-  // Auto-join on mount if not already in meeting
-  // (Called from parent via useEffect)
+  // ─── Auto-join when localStream is ready ──────────
+
+  useEffect(() => {
+    if (localStream && user && !joinedRef.current) {
+      joinMeeting();
+    }
+  }, [localStream, user, joinMeeting]);
 
   // ─── Toggle Audio ─────────────────────────────────
 
@@ -166,6 +171,7 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
     closeAllConnections();
     disconnect();
     resetMeeting();
+    joinedRef.current = false;
     router.push('/');
   }, [meetingCode, closeAllConnections, disconnect, resetMeeting, router, socketRef]);
 
@@ -238,23 +244,8 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
           />
         </div>
       </div>
-
-      {/* Hidden auto-join trigger */}
-      {!isInMeeting && localStream && (
-        <AutoJoin onJoin={joinMeeting} />
-      )}
     </div>
   );
 };
-
-/**
- * Auto-join trigger component.
- * Calls onJoin once after mounting.
- */
-function AutoJoin({ onJoin }: { onJoin: () => void }) {
-  // Use setTimeout to ensure socket is ready
-  setTimeout(onJoin, 100);
-  return null;
-}
 
 export default MeetingRoom;

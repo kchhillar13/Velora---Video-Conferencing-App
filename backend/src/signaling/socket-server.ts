@@ -5,12 +5,48 @@ import {
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
+  PeerInfo,
 } from '../types/socket.types';
-import { RoomManager } from './room-manager';
+import { RoomManager, RoomObserver } from './room-manager';
 import { registerConnectionHandlers } from './handlers/connection.handler';
 import { registerWebRTCHandlers } from './handlers/webrtc.handler';
 import { registerMediaHandlers } from './handlers/media.handler';
 import { logger } from '../utils/logger';
+
+// ─── Socket Room Observer ─────────────────────────────
+
+/**
+ * SocketRoomObserver — Observer Pattern (Concrete Observer)
+ * Listens to RoomManager events and broadcasts them to
+ * Socket.io rooms. This centralizes all broadcast logic
+ * and prevents double-emission from handlers.
+ */
+class SocketRoomObserver implements RoomObserver {
+  constructor(
+    private io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+  ) {}
+
+  onUserJoined(meetingCode: string, peer: PeerInfo): void {
+    // Broadcast to everyone in the room EXCEPT the new peer
+    this.io.to(meetingCode).except(peer.socketId).emit('user-joined', peer);
+    logger.debug(`[observer] Broadcasted user-joined: ${peer.userName} → room ${meetingCode}`);
+  }
+
+  onUserLeft(meetingCode: string, peer: PeerInfo): void {
+    // Broadcast to everyone remaining in the room
+    this.io.to(meetingCode).emit('user-left', {
+      userId: peer.userId,
+      socketId: peer.socketId,
+    });
+    logger.debug(`[observer] Broadcasted user-left: ${peer.userName} → room ${meetingCode}`);
+  }
+
+  onRoomClosed(meetingCode: string): void {
+    logger.info(`[observer] Room closed: ${meetingCode}`);
+  }
+}
+
+// ─── Socket Server (Singleton) ────────────────────────
 
 /**
  * SocketServer — Singleton
@@ -35,6 +71,11 @@ export class SocketServer {
     });
 
     this.roomManager = new RoomManager();
+
+    // Register the Observer that handles all Socket.io broadcasts
+    const observer = new SocketRoomObserver(this.io);
+    this.roomManager.subscribe(observer);
+
     this.setupEventHandlers();
   }
 
