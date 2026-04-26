@@ -147,6 +147,37 @@ export class MeetingController {
       res.status(500).json({ error: 'Failed to get recordings' });
     }
   }
+
+  /**
+   * DELETE /api/meetings/:id
+   * Permanently deletes a meeting. Only the host may do this.
+   * Related Participants and Recordings are cascade-deleted by the DB.
+   */
+  async delete(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.auth) {
+        res.status(401).json({ error: 'Not authenticated' });
+        return;
+      }
+
+      const id = req.params.id as string;
+      if (!id) {
+        res.status(400).json({ error: 'Meeting ID is required' });
+        return;
+      }
+
+      await meetingService.deleteMeeting(id, req.auth.clerkId);
+      res.status(204).send();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete meeting';
+      logger.error('Failed to delete meeting:', error);
+      const statusCode =
+        message === 'Meeting not found' ? 404
+        : message === 'Only the host can delete a meeting' ? 403
+        : 400;
+      res.status(statusCode).json({ error: message });
+    }
+  }
 }
 
 export const meetingController = new MeetingController();

@@ -117,7 +117,7 @@ const Home = () => {
   })();
 
   return (
-    <section className="flex size-full flex-col gap-10 text-white">
+    <section className="flex size-full flex-col gap-12 text-white">
       {/* Hero Banner */}
       <div className="relative h-[303px] w-full rounded-3xl overflow-hidden hero-gradient">
         {/* Decorative orbs */}
@@ -144,7 +144,7 @@ const Home = () => {
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         {homeCards.map((card) => (
           <HomeCard
             key={card.title}

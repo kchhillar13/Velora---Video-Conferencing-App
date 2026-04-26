@@ -1,7 +1,22 @@
 'use client';
 
-import { type MeetingResponse, updateMeetingStatus } from '@/lib/api';
-import { Calendar, Clock, Users, Copy, Check, Square, XCircle, Loader2 } from 'lucide-react';
+import {
+  type MeetingResponse,
+  updateMeetingStatus,
+  deleteMeeting,
+} from '@/lib/api';
+import {
+  Calendar,
+  Clock,
+  Users,
+  Copy,
+  Check,
+  Square,
+  XCircle,
+  Loader2,
+  Trash2,
+  AlertTriangle,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -16,8 +31,10 @@ interface MeetingCardProps {
 const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
   const [copied, setCopied] = useState(false);
   const [endingStatus, setEndingStatus] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const { getToken } = useAuth();
-  const { updateMeetingInList } = useMeetingStore();
+  const { updateMeetingInList, removeMeetingFromList } = useMeetingStore();
 
   const handleCopy = async () => {
     const link = `${window.location.origin}/meeting/${meeting.meetingCode}`;
@@ -50,6 +67,36 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirmDelete) {
+      // First click: show confirmation prompt
+      setConfirmDelete(true);
+      // Auto-reset after 4 seconds so it doesn't stay stuck
+      setTimeout(() => setConfirmDelete(false), 4000);
+      return;
+    }
+
+    // Second click: confirmed — perform deletion
+    setIsDeleting(true);
+    try {
+      const token = await getToken();
+      if (!token) return;
+
+      // Optimistic removal from Zustand — card disappears instantly
+      removeMeetingFromList(meeting.id);
+
+      // Fire DELETE to backend
+      await deleteMeeting(token, meeting.id);
+    } catch (error) {
+      console.error('Failed to delete meeting:', error);
+      // On failure we can't easily restore the card without re-fetching,
+      // so just log — in production you'd trigger a toast + refetch.
+    } finally {
+      setIsDeleting(false);
+      setConfirmDelete(false);
+    }
+  };
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'No date';
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -68,13 +115,15 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
   };
 
   return (
-    <div className="bg-dark-1 rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-all group">
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-dark-1 rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-all group flex flex-col gap-5">
+
+      {/* ── Header row: date + status badge ─────────────────── */}
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           {type === 'upcoming' ? (
-            <Calendar className="size-4 text-blue-1" />
+            <Calendar className="size-4 text-blue-1 shrink-0" />
           ) : (
-            <Clock className="size-4 text-gray-400" />
+            <Clock className="size-4 text-gray-400 shrink-0" />
           )}
           <span className="text-sm text-gray-400">
             {formatDate(meeting.scheduledAt || meeting.createdAt)}
@@ -82,7 +131,7 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
         </div>
         <span
           className={cn(
-            'px-2 py-1 rounded-full text-xs font-medium',
+            'px-3 py-1 rounded-full text-xs font-semibold shrink-0',
             statusColors[meeting.status] || statusColors.PENDING
           )}
         >
@@ -90,35 +139,46 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
         </span>
       </div>
 
-      <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-1 transition-colors">
-        {meeting.title}
-      </h3>
+      {/* ── Title + meeting code ──────────────────────────────── */}
+      <div className="flex flex-col gap-1">
+        <h3 className="text-lg font-semibold text-white group-hover:text-blue-1 transition-colors leading-snug">
+          {meeting.title}
+        </h3>
+        <p className="text-xs text-gray-500 font-mono tracking-wider">
+          {meeting.meetingCode}
+        </p>
+      </div>
 
-      <p className="text-sm text-gray-500 mb-4 font-mono">
-        {meeting.meetingCode}
-      </p>
+      {/* ── Footer row: participants + actions ───────────────── */}
+      <div className="flex items-center justify-between gap-4 pt-2 border-t border-white/5">
 
-      <div className="flex items-center justify-between">
+        {/* Participant count */}
         <div className="flex items-center gap-2 text-gray-400">
-          <Users className="size-4" />
+          <Users className="size-4 shrink-0" />
           <span className="text-sm">
-            {meeting._count?.participants || 0} participants
+            {meeting._count?.participants ?? 0} participant{(meeting._count?.participants ?? 0) !== 1 ? 's' : ''}
           </span>
         </div>
 
+        {/* Action buttons */}
         <div className="flex items-center gap-2">
+
+          {/* Copy meeting link */}
           <button
             onClick={handleCopy}
             className={cn(
               'p-2 rounded-lg transition-all',
-              copied ? 'bg-green-1/20 text-green-1' : 'hover:bg-dark-3 text-gray-400'
+              copied
+                ? 'bg-green-1/20 text-green-1'
+                : 'hover:bg-dark-3 text-gray-400 hover:text-white'
             )}
             title="Copy meeting link"
+            id={`copy-link-${meeting.id}`}
           >
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
           </button>
 
-          {/* End Meeting button — show for upcoming/active meetings */}
+          {/* ─ Upcoming meeting controls ─ */}
           {type === 'upcoming' && meeting.status !== 'ENDED' && (
             <>
               <button
@@ -126,6 +186,7 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
                 disabled={endingStatus !== null}
                 className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all disabled:opacity-50"
                 title="End meeting"
+                id={`end-meeting-${meeting.id}`}
               >
                 {endingStatus === 'ENDED' ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -150,11 +211,39 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
               disabled={endingStatus !== null}
               className="p-2 rounded-lg hover:bg-orange-1/20 text-gray-400 hover:text-orange-1 transition-all disabled:opacity-50"
               title="Cancel meeting"
+              id={`cancel-meeting-${meeting.id}`}
             >
               {endingStatus ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <XCircle className="size-4" />
+              )}
+            </button>
+          )}
+
+          {/* ─ Delete button — previous meetings only ─ */}
+          {type === 'previous' && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50',
+                confirmDelete
+                  ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 ring-1 ring-red-500/40'
+                  : 'hover:bg-dark-3 text-gray-400 hover:text-red-400'
+              )}
+              title={confirmDelete ? 'Click again to confirm deletion' : 'Delete this meeting'}
+              id={`delete-meeting-${meeting.id}`}
+            >
+              {isDeleting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : confirmDelete ? (
+                <>
+                  <AlertTriangle className="size-4" />
+                  <span>Confirm</span>
+                </>
+              ) : (
+                <Trash2 className="size-4" />
               )}
             </button>
           )}

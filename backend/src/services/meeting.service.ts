@@ -251,6 +251,34 @@ export class MeetingService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  /**
+   * Deletes a meeting from the database.
+   * Only the host can delete a meeting.
+   * Participants and Recordings are cascade-deleted by Prisma schema rules.
+   */
+  async deleteMeeting(meetingId: string, clerkId: string): Promise<void> {
+    const user = await prisma.user.findUnique({ where: { clerkId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const meeting = await prisma.meeting.findUnique({
+      where: { id: meetingId },
+    });
+
+    if (!meeting) {
+      throw new Error('Meeting not found');
+    }
+
+    if (meeting.hostId !== user.id) {
+      throw new Error('Only the host can delete a meeting');
+    }
+
+    // Cascade: Participant + Recording rows are deleted automatically (onDelete: Cascade)
+    await prisma.meeting.delete({ where: { id: meetingId } });
+    logger.info(`Meeting ${meeting.meetingCode} deleted by ${user.name}`);
+  }
 }
 
 export const meetingService = new MeetingService();

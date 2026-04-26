@@ -113,3 +113,27 @@ export async function updateMeetingStatus(
     token,
   });
 }
+
+/**
+ * DELETE /api/meetings/:id
+ * Permanently removes a meeting (host only).
+ * Returns void — the backend sends 204 No Content.
+ */
+export async function deleteMeeting(token: string, meetingId: string): Promise<void> {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+  const response = await fetch(`${API_URL}/meetings/${meetingId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      (errorData as { error?: string }).error || `API error: ${response.status} ${response.statusText}`
+    );
+  }
+  // 204 No Content — nothing to return
+}
