@@ -179,21 +179,21 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
 
   const totalParticipants = peers.size + 1; // +1 for local
   const getGridClass = () => {
-    if (totalParticipants === 1) return 'video-grid-1';
-    if (totalParticipants === 2) return 'video-grid-2';
-    if (totalParticipants <= 4) return 'video-grid-4';
-    return 'video-grid-many';
+    if (totalParticipants === 1) return 'grid-cols-1';
+    if (totalParticipants === 2) return 'grid-cols-1 md:grid-cols-2';
+    if (totalParticipants <= 4) return 'grid-cols-2';
+    return 'grid-cols-2 md:grid-cols-3';
   };
 
   const userName = user?.fullName || user?.firstName || 'You';
 
   return (
-    <div className="flex h-dvh bg-dark-2">
+    <div className="flex h-dvh bg-zinc-950 text-white selection:bg-blue-500/30">
       {/* Main content area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Video Grid */}
-        <div className="flex-1 relative overflow-hidden">
-          <div className={cn('video-grid', getGridClass())}>
+        <div className="flex-1 relative overflow-hidden p-4 lg:p-6">
+          <div className={cn('grid w-full h-full gap-4 lg:gap-6 auto-rows-fr', getGridClass())}>
             {/* Local Video */}
             <VideoTile
               stream={localStream}
@@ -229,7 +229,7 @@ const MeetingRoom = ({ meetingCode }: MeetingRoomProps) => {
         </div>
 
         {/* Controls Bar */}
-        <div className="bg-dark-1 border-t border-white/5">
+        <div className="bg-zinc-950/80 backdrop-blur-xl border-t border-white/10 shrink-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
           <MediaControls
             isAudioEnabled={isAudioEnabled}
             isVideoEnabled={isVideoEnabled}

@@ -56,8 +56,12 @@ const MeetingSetup = ({ onJoin, meetingCode }: MeetingSetupProps) => {
   };
 
   return (
-    <div className="flex-center min-h-dvh bg-dark-2 p-6">
-      <div className="w-full max-w-3xl">
+    <div className="flex items-center justify-center min-h-dvh bg-zinc-950 p-6 relative overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[128px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[128px] pointer-events-none" />
+      
+      <div className="relative w-full max-w-3xl flex flex-col items-center bg-zinc-900/50 backdrop-blur-2xl p-10 rounded-[2rem] border border-white/10 shadow-2xl">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Ready to join?</h1>
@@ -68,7 +72,7 @@ const MeetingSetup = ({ onJoin, meetingCode }: MeetingSetupProps) => {
         </div>
 
         {/* Video Preview */}
-        <div className="relative rounded-2xl overflow-hidden bg-dark-1 aspect-video mb-6 border border-white/5">
+        <div className="relative w-full rounded-3xl overflow-hidden bg-zinc-950 aspect-video mb-8 border border-white/5 shadow-2xl ring-1 ring-white/10">
           {localStream && isVideoEnabled ? (
             <video
               ref={videoRef}
@@ -78,12 +82,13 @@ const MeetingSetup = ({ onJoin, meetingCode }: MeetingSetupProps) => {
               className="w-full h-full object-cover transform -scale-x-100"
             />
           ) : (
-            <div className="w-full h-full flex-center bg-dark-3">
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-1 to-purple-1 text-white text-3xl font-bold">
-                  <VideoOff className="size-10" />
+            <div className="w-full h-full flex items-center justify-center bg-zinc-950">
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-[0_0_40px_rgba(37,99,235,0.4)] text-white relative">
+                  <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
+                  <VideoOff className="size-12 relative z-10" />
                 </div>
-                <p className="text-gray-400 text-sm">Camera is off</p>
+                <p className="text-zinc-400 font-medium tracking-wide">Camera is off</p>
               </div>
             </div>
           )}
@@ -125,11 +130,12 @@ const MeetingSetup = ({ onJoin, meetingCode }: MeetingSetupProps) => {
         </div>
 
         {/* Join Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-center w-full mt-4">
           <button
             onClick={onJoin}
-            className="bg-blue-1 hover:bg-blue-1/90 text-white font-semibold text-lg px-12 py-4 rounded-2xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-1/30"
+            className="group relative w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg px-16 py-5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_30px_rgba(37,99,235,0.4)] overflow-hidden"
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[200%] group-hover:animate-[shimmer_2s_infinite]" />
             Join Meeting
           </button>
         </div>

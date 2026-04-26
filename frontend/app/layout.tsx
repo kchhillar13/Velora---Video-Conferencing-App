@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -23,12 +24,9 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
+        baseTheme: dark,
         variables: {
-          colorPrimary: '#0E78F9',
-          colorBackground: '#1C1F2E',
-          colorText: '#ffffff',
-          colorInputBackground: '#252A41',
-          colorInputText: '#ffffff',
+          colorPrimary: '#2563eb', // Matches blue-600
         },
         layout: {
           socialButtonsVariant: 'iconButton',
@@ -37,7 +35,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-        <body className={`${inter.variable} antialiased bg-dark-2 text-white`}>
+        <body className={`${inter.variable} antialiased bg-zinc-950 text-white`}>
           {children}
         </body>
       </html>

@@ -117,26 +117,24 @@ const Home = () => {
   })();
 
   return (
-    <section className="flex size-full flex-col gap-12 text-white">
+    <section className="flex size-full flex-col gap-10 text-white max-lg:ml-0 lg:ml-[264px] pr-5">
       {/* Hero Banner */}
-      <div className="relative h-[303px] w-full rounded-3xl overflow-hidden hero-gradient">
-        {/* Decorative orbs */}
-        <div className="absolute top-10 right-20 w-32 h-32 bg-blue-1/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-10 left-20 w-40 h-40 bg-purple-1/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-
-        <div className="relative flex h-full flex-col justify-between p-8 lg:p-11">
-          <div>
-            <span className="inline-flex items-center gap-2 py-2 px-4 bg-white/5 backdrop-blur-sm rounded-full text-sky-1 text-sm font-medium border border-white/5">
-              <span className="w-2 h-2 rounded-full bg-green-1 animate-pulse" />
-              {greeting}, {user?.firstName || 'there'}
+      <div className="relative w-full rounded-[20px] overflow-hidden hero-gradient shadow-xl flex flex-col min-h-[280px]">
+        {/* Soft gradient background behind the clock is provided by hero-gradient */}
+        
+        <div className="relative z-10 flex flex-col gap-8 h-full justify-between py-8 px-10 lg:py-12 lg:px-16 flex-1">
+          <div className="flex items-start">
+            <span className="inline-flex items-center gap-2.5 py-2 px-5 bg-dark-2/40 backdrop-blur-md rounded-full text-white text-sm font-medium border border-white/10 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              {greeting}, <span className="font-semibold text-white">{user?.firstName || 'there'}</span>
             </span>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-extrabold lg:text-7xl bg-gradient-to-r from-white via-white to-sky-1 bg-clip-text text-transparent drop-shadow-lg">
+          <div className="flex flex-col gap-2 mt-auto pt-8">
+            <h1 className="text-5xl font-extrabold lg:text-7xl text-white tracking-tighter drop-shadow-md">
               {time}
             </h1>
-            <p className="text-lg font-medium text-sky-1/70 lg:text-2xl">
+            <p className="text-lg font-medium text-sky-1 lg:text-xl">
               {date}
             </p>
           </div>
@@ -144,7 +142,7 @@ const Home = () => {
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pr-5 pb-5">
         {homeCards.map((card) => (
           <HomeCard
             key={card.title}

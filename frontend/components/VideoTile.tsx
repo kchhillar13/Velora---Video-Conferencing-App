@@ -46,8 +46,8 @@ const VideoTile = ({
   return (
     <div
       className={cn(
-        'relative w-full h-full rounded-2xl overflow-hidden bg-dark-3 border border-white/5 group transition-all',
-        isScreenSharing && 'border-blue-1/30 border-2'
+        'relative w-full h-full rounded-3xl overflow-hidden bg-zinc-950 border border-white/10 shadow-2xl transition-all',
+        isScreenSharing ? 'ring-2 ring-blue-500 shadow-[0_0_30px_rgba(37,99,235,0.3)]' : 'hover:border-white/20'
       )}
     >
       {/* Video Element */}
@@ -64,37 +64,37 @@ const VideoTile = ({
         />
       ) : (
         /* Avatar fallback when camera is off */
-        <div className="w-full h-full flex-center bg-dark-3">
-          <div className="flex-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-1 to-purple-1 text-white text-2xl font-bold">
+        <div className="w-full h-full flex items-center justify-center bg-zinc-950">
+          <div className="flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white text-3xl font-bold shadow-[0_0_30px_rgba(37,99,235,0.3)]">
             {initials}
           </div>
         </div>
       )}
 
       {/* Overlay — Name and status indicators */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-white truncate max-w-[150px]">
+            <span className="text-sm font-semibold text-white drop-shadow-md truncate max-w-[150px]">
               {userName}
               {isLocal && ' (You)'}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {isScreenSharing && (
-              <div className="p-1 rounded bg-blue-1/20">
-                <Monitor className="size-3.5 text-blue-1" />
+              <div className="p-1.5 rounded-lg bg-blue-600/30 backdrop-blur-md border border-blue-500/30">
+                <Monitor className="size-3.5 text-blue-300" />
               </div>
             )}
             {!audioEnabled && (
-              <div className="p-1 rounded bg-red-500/20">
-                <MicOff className="size-3.5 text-red-400" />
+              <div className="p-1.5 rounded-lg bg-red-500/30 backdrop-blur-md border border-red-500/30">
+                <MicOff className="size-3.5 text-red-300" />
               </div>
             )}
             {!videoEnabled && (
-              <div className="p-1 rounded bg-red-500/20">
-                <VideoOff className="size-3.5 text-red-400" />
+              <div className="p-1.5 rounded-lg bg-red-500/30 backdrop-blur-md border border-red-500/30">
+                <VideoOff className="size-3.5 text-red-300" />
               </div>
             )}
           </div>

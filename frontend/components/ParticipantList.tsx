@@ -26,7 +26,7 @@ const ParticipantList = ({
   const totalCount = peers.size + 1; // +1 for local user
 
   return (
-    <div className="absolute right-0 top-0 h-full w-80 bg-dark-1 border-l border-white/5 animate-slide-in z-30 flex flex-col">
+    <div className="absolute right-0 top-0 h-full w-[340px] bg-zinc-900/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl animate-slide-in z-30 flex flex-col">
       {/* Header */}
       <div className="flex-between p-4 border-b border-white/5">
         <h3 className="text-base font-semibold text-white">
@@ -34,10 +34,10 @@ const ParticipantList = ({
         </h3>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-dark-3 rounded-lg transition-colors"
+          className="p-2 hover:bg-white/10 rounded-xl transition-all hover:scale-105 active:scale-95"
           aria-label="Close participant list"
         >
-          <X className="size-4 text-gray-400" />
+          <X className="size-4 text-zinc-400 hover:text-white" />
         </button>
       </div>
 
@@ -93,8 +93,8 @@ const ParticipantItem = ({
     .slice(0, 2);
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-dark-3 transition-colors">
-      <div className="flex-center w-9 h-9 rounded-full bg-gradient-to-br from-blue-1/50 to-purple-1/50 text-white text-sm font-medium shrink-0">
+    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-default">
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-bold shadow-lg shrink-0">
         {initials}
       </div>
 
