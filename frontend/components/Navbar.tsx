@@ -10,27 +10,32 @@ const Navbar = () => {
 
   return (
     <nav
-      className="flex-between fixed z-50 w-full h-[72px] bg-zinc-950/90 backdrop-blur-xl px-6 lg:px-10 border-b border-white/10"
+      className="flex-between w-full h-20 bg-zinc-950/70 backdrop-blur-3xl px-8 md:px-12 lg:px-16 border-b border-white/5 shrink-0 z-50"
       id="velora-navbar"
     >
-      <Link href="/" className="flex items-center gap-2.5 group">
+      <Link href="/" className="flex items-center gap-3 group">
         <div className="relative">
-          <div className="absolute inset-0 bg-blue-600/20 rounded-lg blur-md group-hover:bg-blue-600/30 transition-colors duration-300" />
-          <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-lg shadow-lg shadow-blue-600/20">
-            <Video className="size-5 text-white" />
+          <div className="absolute inset-0 bg-blue-600/40 rounded-xl blur-xl group-hover:bg-blue-600/60 transition-colors duration-500" />
+          <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 p-2.5 rounded-xl shadow-2xl border border-white/10">
+            <Video className="size-6 text-white" />
           </div>
         </div>
-        <span className="text-xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent max-sm:hidden">
-          Velora
-        </span>
+        <div className="flex flex-col -gap-1">
+          <span className="text-2xl font-black tracking-tighter bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent max-sm:hidden">
+            VELORA
+          </span>
+          <span className="text-[10px] font-bold text-blue-500 tracking-[0.2em] max-sm:hidden leading-none">
+            CONFERENCE
+          </span>
+        </div>
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-5">
         {isSignedIn && (
           <UserButton
             appearance={{
               elements: {
-                avatarBox: 'w-10 h-10 ring-2 ring-white/10 ring-offset-2 ring-offset-zinc-950',
+                avatarBox: 'w-10 h-10 rounded-xl ring-2 ring-white/5 ring-offset-4 ring-offset-zinc-950 hover:ring-blue-500/50 transition-all duration-300',
               },
             }}
           />

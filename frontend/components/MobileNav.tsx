@@ -38,17 +38,17 @@ const MobileNav = () => {
         >
           {/* Sheet */}
           <div
-            className="fixed left-0 top-0 h-full w-[280px] bg-dark-1 p-6 animate-slide-in border-r border-white/5"
+            className="fixed left-0 top-0 h-full w-[280px] bg-zinc-950 p-6 animate-slide-in border-r border-white/5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-8">
-              <span className="text-xl font-bold text-white">Velora</span>
+              <span className="text-xl font-black tracking-tighter text-white">VELORA</span>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-dark-3 rounded-lg"
+                className="p-2 hover:bg-white/5 rounded-xl transition-colors"
                 aria-label="Close menu"
               >
-                <X className="size-5 text-gray-400" />
+                <X className="size-5 text-zinc-500" />
               </button>
             </div>
 
@@ -65,23 +65,22 @@ const MobileNav = () => {
                     key={link.label}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      'flex gap-4 items-center p-4 rounded-xl transition-all',
+                      'flex gap-4 items-center p-4 rounded-xl transition-all duration-300',
                       {
-                        'bg-blue-1': isActive,
-                        'hover:bg-dark-3': !isActive,
+                        'bg-blue-600/10 text-blue-500': isActive,
+                        'hover:bg-white/5 text-zinc-400 hover:text-white': !isActive,
                       }
                     )}
                   >
                     <Icon
                       className={cn('size-5', {
-                        'text-white': isActive,
-                        'text-gray-400': !isActive,
+                        'text-blue-500': isActive,
+                        'text-zinc-500': !isActive,
                       })}
                     />
                     <p
-                      className={cn('text-base font-medium', {
+                      className={cn('text-sm font-bold tracking-wide', {
                         'text-white': isActive,
-                        'text-gray-400': !isActive,
                       })}
                     >
                       {link.label}

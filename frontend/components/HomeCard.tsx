@@ -39,23 +39,27 @@ const HomeCard = ({ title, description, icon, color, onClick }: HomeCardProps) =
     <button
       onClick={onClick}
       className={cn(
-        'relative flex flex-col justify-between w-full min-h-[240px] rounded-[24px] p-6 md:p-7 cursor-pointer group transition-all duration-500 hover:-translate-y-2 text-left overflow-hidden border border-white/10',
-        theme.cardBg,
-        theme.shadow
+        'relative flex flex-col justify-between w-full min-h-[260px] rounded-[36px] p-10 cursor-pointer group transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] text-left overflow-hidden border border-white/5 shadow-2xl',
+        theme.cardBg
       )}
       id={`home-card-${title.toLowerCase().replace(/\s/g, '-')}`}
     >
-      {/* Floating internal gradient for that glass edge light */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      {/* Glossy Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10 opacity-50" />
+      
+      {/* Hover Light Effect */}
+      <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
 
-      {/* The 3D Floating Icon Container - Guaranteed not to overlap with text because of flex justify-between */}
-      <div className={cn('relative flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-500 mb-6 group-hover:scale-110 group-hover:-rotate-3', theme.bg, theme.shadow)}>
-        <Icon className={cn('size-7', theme.text)} />
+      <div className={cn(
+        'relative flex items-center justify-center w-14 h-14 rounded-[18px] transition-all duration-500 mb-10 bg-white/20 backdrop-blur-md border border-white/10 group-hover:rotate-6 shadow-xl',
+        theme.shadow
+      )}>
+        <Icon className="size-7 text-white" />
       </div>
 
-      <div className="relative flex flex-col mt-auto w-full gap-1.5">
-        <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight break-words">{title}</h3>
-        <p className="text-sm md:text-base font-medium text-white/50 group-hover:text-white/80 transition-colors duration-300 break-words">{description}</p>
+      <div className="relative flex flex-col mt-auto">
+        <h3 className="text-2xl font-black text-white tracking-tight leading-tight mb-3">{title}</h3>
+        <p className="text-sm font-semibold text-white/70 group-hover:text-white transition-colors duration-300 leading-relaxed max-w-[200px]">{description}</p>
       </div>
     </button>
   );

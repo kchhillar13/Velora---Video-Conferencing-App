@@ -43,48 +43,48 @@ const MeetingModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex-center bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex-center bg-black/80 backdrop-blur-md animate-fade-in">
       <div
-        className="relative w-full max-w-md mx-4 bg-dark-1 rounded-2xl p-8 border border-white/10 animate-scale-in"
+        className="relative w-full max-w-lg mx-4 bg-zinc-950 rounded-[2.5rem] p-10 border border-white/5 animate-scale-in shadow-[0_0_60px_rgba(0,0,0,0.5)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-dark-3 rounded-lg transition-colors"
+          className="absolute top-6 right-6 p-2.5 hover:bg-white/5 rounded-xl transition-colors"
           aria-label="Close modal"
         >
-          <X className="size-5 text-gray-400" />
+          <X className="size-6 text-zinc-500 hover:text-white" />
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
+        <h2 className="text-3xl font-black text-white mb-8 tracking-tighter">{title}</h2>
 
         {/* Content based on type */}
         {type === 'create' && meetingLink && (
-          <div className="space-y-4">
-            <p className="text-gray-400">
-              Share this link with others to invite them to your meeting:
+          <div className="space-y-6">
+            <p className="text-zinc-400 font-medium">
+              Invite others to join the conversation:
             </p>
-            <div className="flex items-center gap-2 bg-dark-3 rounded-xl p-3">
-              <code className="flex-1 text-sm text-sky-1 break-all">{meetingLink}</code>
+            <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-4 border border-white/5">
+              <code className="flex-1 text-sm text-blue-500 font-mono break-all">{meetingLink}</code>
               <button
                 onClick={handleCopy}
                 className={cn(
-                  'p-2 rounded-lg transition-all',
-                  copied ? 'bg-green-1/20 text-green-1' : 'hover:bg-dark-1 text-gray-400'
+                  'p-3 rounded-xl transition-all',
+                  copied ? 'bg-green-600/20 text-green-500' : 'hover:bg-white/10 text-zinc-400'
                 )}
               >
-                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                {copied ? <Check className="size-5" /> : <Copy className="size-5" />}
               </button>
             </div>
           </div>
         )}
 
         {type === 'join' && (
-          <div className="space-y-4">
-            <p className="text-gray-400">
-              Enter the meeting code or paste a meeting link:
+          <div className="space-y-6">
+            <p className="text-zinc-400 font-medium">
+              Paste the meeting link or code below:
             </p>
             <input
               type="text"
@@ -92,17 +92,17 @@ const MeetingModal = ({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-              className="w-full bg-dark-3 text-white rounded-xl px-4 py-3 border border-white/10 focus:border-blue-1 focus:outline-none focus:ring-1 focus:ring-blue-1 transition-all placeholder:text-gray-500"
+              className="w-full bg-white/5 text-white rounded-2xl px-6 py-4 border border-white/5 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-all placeholder:text-zinc-600 font-medium"
               autoFocus
             />
             <button
               onClick={handleSubmit}
               disabled={!inputValue.trim() || isLoading}
-              className="w-full bg-blue-1 hover:bg-blue-1/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl transition-all flex-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-lg py-4 rounded-2xl transition-all flex-center gap-3 shadow-[0_0_30px_rgba(37,99,235,0.3)]"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-5 animate-spin" />
                   Joining...
                 </>
               ) : (
@@ -112,24 +112,23 @@ const MeetingModal = ({
           </div>
         )}
 
-        {/* Start Meeting button for create type without link yet */}
         {type === 'create' && !meetingLink && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <input
               type="text"
               placeholder="Meeting title (optional)"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full bg-dark-3 text-white rounded-xl px-4 py-3 border border-white/10 focus:border-blue-1 focus:outline-none focus:ring-1 focus:ring-blue-1 transition-all placeholder:text-gray-500"
+              className="w-full bg-white/5 text-white rounded-2xl px-6 py-4 border border-white/5 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 transition-all placeholder:text-zinc-600 font-medium"
             />
             <button
               onClick={() => onSubmit?.(inputValue || 'Instant Meeting')}
               disabled={isLoading}
-              className="w-full bg-blue-1 hover:bg-blue-1/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl transition-all flex-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-lg py-4 rounded-2xl transition-all flex-center gap-3 shadow-[0_0_30_rgba(37,99,235,0.3)]"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-5 animate-spin" />
                   Creating...
                 </>
               ) : (

@@ -4,18 +4,14 @@ import { ReactNode } from 'react';
 
 const HomeLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <main className="relative min-h-dvh bg-dark-2">
-      {/* Fixed Navbar — height is 72px */}
+    <main className="flex flex-col h-screen bg-dark-2 overflow-hidden">
       <Navbar />
 
-      {/* Content area — top padding clears the fixed navbar */}
-      <div className="flex pt-[72px]" style={{ minHeight: '100dvh' }}>
-        {/* Sidebar — sticky, fills remaining viewport height */}
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
 
-        {/* Main content */}
-        <section className="flex flex-1 flex-col px-6 pb-6 pt-8 max-md:pb-14 sm:px-14 overflow-y-auto">
-          <div className="w-full max-w-7xl mx-auto">
+        <section className="flex flex-1 flex-col overflow-y-auto px-8 pb-12 pt-10 md:px-12 lg:px-16 xl:px-20">
+          <div className="w-full max-w-[1360px] mx-auto">
             {children}
           </div>
         </section>

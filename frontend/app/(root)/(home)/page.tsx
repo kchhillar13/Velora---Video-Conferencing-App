@@ -117,33 +117,37 @@ const Home = () => {
   })();
 
   return (
-    <section className="flex size-full flex-col gap-8 text-white w-full">
-
+    <section className="flex size-full flex-col gap-14 text-white">
       {/* Hero Banner */}
-      <div className="relative w-full rounded-[20px] overflow-hidden bg-dark-1 border border-white/5 shadow-xl flex flex-col min-h-[260px] justify-between">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 opacity-50" />
+      <div className="relative h-[320px] w-full rounded-[40px] overflow-hidden bg-hero bg-cover shadow-2xl border border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/95 via-zinc-950/40 to-transparent" />
         
-        <div className="relative z-10 flex flex-col justify-between p-6 md:p-10 flex-1">
-          <div className="flex items-start">
-            <span className="inline-flex items-center gap-2 py-2 px-4 bg-dark-2/50 backdrop-blur-md rounded-full text-white text-sm font-medium border border-white/10 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              {greeting}, <span className="font-semibold text-white">{user?.firstName || 'there'}</span>
-            </span>
+        <div className="relative z-10 flex h-full flex-col justify-between p-10 md:p-14 lg:p-20">
+          <div className="flex items-center gap-2">
+            <div className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
+              </span>
+              <p className="text-xs font-black text-sky-1 uppercase tracking-[0.25em]">
+                {greeting}, {user?.firstName || 'User'}
+              </p>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1 mt-8">
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white tracking-tight break-words">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none">
               {time}
             </h1>
-            <p className="text-base md:text-lg lg:text-xl font-medium text-sky-1 mt-1">
+            <p className="text-xl md:text-2xl font-bold text-zinc-400 max-w-lg tracking-tight ml-1">
               {date}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Action Cards with increased top margin */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 pb-10">
+      {/* Action Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12">
         {homeCards.map((card) => (
           <HomeCard
             key={card.title}
