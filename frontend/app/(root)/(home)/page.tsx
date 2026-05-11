@@ -117,37 +117,30 @@ const Home = () => {
   })();
 
   return (
-    <section className="flex size-full flex-col gap-14 text-white">
-      {/* Hero Banner */}
-      <div className="relative h-[320px] w-full rounded-[40px] overflow-hidden bg-hero bg-cover shadow-2xl border border-white/5">
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/95 via-zinc-950/40 to-transparent" />
-        
-        <div className="relative z-10 flex h-full flex-col justify-between p-10 md:p-14 lg:p-20">
-          <div className="flex items-center gap-2">
-            <div className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
-              </span>
-              <p className="text-xs font-black text-sky-1 uppercase tracking-[0.25em]">
-                {greeting}, {user?.firstName || 'User'}
-              </p>
-            </div>
-          </div>
+    <section className="flex w-full flex-col items-center justify-start gap-12 text-white pb-12">
+      {/* Fixed Spacer to guarantee space at the top */}
+      <div className="h-2 w-full block" />
 
-          <div className="flex flex-col gap-3">
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none">
-              {time}
-            </h1>
-            <p className="text-xl md:text-2xl font-bold text-zinc-400 max-w-lg tracking-tight ml-1">
-              {date}
-            </p>
-          </div>
+      {/* Centered Hero Section */}
+      <div className="flex flex-col items-center justify-center text-center gap-6">
+        <div className="px-6 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/5 flex items-center gap-3">
+          <p className="text-sm font-medium text-zinc-400 tracking-wide">
+            {greeting}, {user?.firstName || 'User'}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h1 className="text-8xl md:text-9xl font-black tracking-tighter leading-none bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent">
+            {time}
+          </h1>
+          <p className="text-xl md:text-2xl font-bold text-zinc-500 tracking-tight">
+            {date}
+          </p>
         </div>
       </div>
 
       {/* Action Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-7xl px-4 pb-12">
         {homeCards.map((card) => (
           <HomeCard
             key={card.title}

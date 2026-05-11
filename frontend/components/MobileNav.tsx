@@ -4,7 +4,7 @@ import { sidebarLinks } from '@/constants';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Home, Calendar, Clock, Video, User, Menu, X } from 'lucide-react';
+import { Home, Calendar, Clock, Files, User, Video, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { type LucideIcon } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const iconMap: Record<string, LucideIcon> = {
   Home,
   Calendar,
   Clock,
-  Video,
+  Files,
   User,
 };
 
@@ -21,10 +21,10 @@ const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="sm:hidden">
+    <div className="lg:hidden">
       <button
         onClick={() => setIsOpen(true)}
-        className="p-2 text-white hover:bg-dark-3 rounded-lg transition-colors"
+        className="p-2 text-white hover:bg-white/5 rounded-lg transition-colors"
         aria-label="Open menu"
       >
         <Menu className="size-6" />
@@ -42,7 +42,12 @@ const MobileNav = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-8">
-              <span className="text-xl font-black tracking-tighter text-white">VELORA</span>
+              <div className="flex items-center gap-2">
+                <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-1.5 rounded-lg">
+                  <Video className="size-5 text-white" />
+                </div>
+                <span className="text-xl font-black tracking-tighter text-white">VELORA</span>
+              </div>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-white/5 rounded-xl transition-colors"
@@ -52,7 +57,7 @@ const MobileNav = () => {
               </button>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {sidebarLinks.map((link) => {
                 const isActive =
                   pathname === link.route ||
@@ -65,24 +70,20 @@ const MobileNav = () => {
                     key={link.label}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      'flex gap-4 items-center p-4 rounded-xl transition-all duration-300',
+                      'flex gap-4 items-center py-6 px-6 rounded-xl transition-all duration-300',
                       {
-                        'bg-blue-600/10 text-blue-500': isActive,
-                        'hover:bg-white/5 text-zinc-400 hover:text-white': !isActive,
+                        'bg-white/5 text-white': isActive,
+                        'text-zinc-500 hover:text-white hover:bg-white/5': !isActive,
                       }
                     )}
                   >
                     <Icon
-                      className={cn('size-5', {
-                        'text-blue-500': isActive,
+                      className={cn('size-6', {
+                        'text-white': isActive,
                         'text-zinc-500': !isActive,
                       })}
                     />
-                    <p
-                      className={cn('text-sm font-bold tracking-wide', {
-                        'text-white': isActive,
-                      })}
-                    >
+                    <p className="text-base font-medium">
                       {link.label}
                     </p>
                   </Link>

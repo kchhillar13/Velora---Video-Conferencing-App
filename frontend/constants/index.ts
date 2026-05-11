@@ -5,19 +5,19 @@ export const sidebarLinks = [
     icon: 'Home',
   },
   {
-    label: 'Upcoming',
+    label: 'Events',
     route: '/upcoming',
     icon: 'Calendar',
   },
   {
-    label: 'Previous',
+    label: 'History',
     route: '/previous',
     icon: 'Clock',
   },
   {
-    label: 'Recordings',
+    label: 'Files',
     route: '/recordings',
-    icon: 'Video',
+    icon: 'Files',
   },
   {
     label: 'Personal Room',
@@ -28,29 +28,29 @@ export const sidebarLinks = [
 
 export const homeCards = [
   {
-    title: 'New Meeting',
+    title: 'NEW MEETING',
     description: 'Start an instant meeting',
     icon: 'Plus',
     color: 'orange',
     action: 'instant',
   },
   {
-    title: 'Join Meeting',
-    description: 'via invitation link',
+    title: 'JOIN MEETING',
+    description: 'With an invitation link',
     icon: 'UserPlus',
     color: 'blue',
     action: 'join',
   },
   {
-    title: 'Schedule Meeting',
-    description: 'Plan your meeting',
+    title: 'SCHEDULE MEETING',
+    description: 'Plan your upcoming meeting',
     icon: 'Calendar',
     color: 'purple',
     action: 'schedule',
   },
   {
-    title: 'View Recordings',
-    description: 'Meeting playbacks',
+    title: 'VIEW RECORDINGS',
+    description: 'View and manage all playbacks',
     icon: 'Video',
     color: 'yellow',
     action: 'recordings',
